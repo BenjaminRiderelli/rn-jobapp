@@ -1,26 +1,22 @@
 import { useState } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  FlatList,
-  ActivityIndicator,
-} from "react-native";
+import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
 import { useRouter } from "expo-router";
-import styles from "./popularjobs.style";
-import { COLORS, SIZES } from "../../../constants";
-import PopularJobCard from "../../common/cards/popular/PopularJobCard";
+import styles from "./nearbyjobs.style";
+import { COLORS } from "../../../constants";
+import NearbyJobCard from "../../common/cards/nearby/NearbyJobCard";
 import { useFetch } from "../../../hook/useFetch";
 
 const Nearbyjobs = () => {
   const router = useRouter();
-
-  const {data, isLoading, error} = useFetch("search", {query:"React developer", num_pages:1})
+  const { data, isLoading, error } = useFetch("search", {
+    query: "React developer",
+    num_pages: 1,
+  });
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Popular Jobs</Text>
+        <Text style={styles.headerTitle}>Nearby Jobs</Text>
         <TouchableOpacity>
           <Text style={styles.headerBtn}>Show All</Text>
         </TouchableOpacity>
@@ -31,17 +27,19 @@ const Nearbyjobs = () => {
         ) : error ? (
           <Text>Something went wrong</Text>
         ) : (
-          <FlatList
-            data={data}
-            renderItem={({ item }) => <PopularJobCard item={item} />}
-            keyExtractor={(item) => item?.job_id}
-            contentContainerStyle={{ columnGap: SIZES.medium }}
-            horizontal
-          />
+          data?.map((job) => {
+            return (
+              <NearbyJobCard
+                job={job}
+                key={`nearby-job-${job?.job_id}`}
+                handleNavigate={() => router.push(`/job-details/${job.job_id}`)}
+              />
+            );
+          })
         )}
       </View>
     </View>
   );
 };
 
-export default Nearbyjobs
+export default Nearbyjobs;
